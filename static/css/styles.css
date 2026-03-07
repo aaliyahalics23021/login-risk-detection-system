@@ -1,0 +1,260 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+  color: #e0fffd;
+  font-family: "Share Tech Mono", monospace;
+}
+
+.navbar {
+  background: linear-gradient(90deg, #020617, #0f172a);
+  border-bottom: 1px solid rgba(34, 197, 94, 0.4);
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.35);
+}
+
+.navbar-brand {
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a5b4fc !important;
+}
+
+.nav-link {
+  color: #94a3b8 !important;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.nav-link:hover {
+  color: #e0f2fe !important;
+}
+
+main.container {
+  max-width: 1200px;
+}
+
+.dashboard-title {
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 1.1rem;
+  color: #a5b4fc;
+}
+
+.card.cyber-card {
+  background: radial-gradient(circle at top left, #020617, #020617 35%, #020617 60%, #000 100%);
+  border-radius: 0.9rem;
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  box-shadow:
+    0 0 18px rgba(0, 255, 170, 0.24),
+    0 0 32px rgba(34, 211, 238, 0.18);
+  color: #e0fffd;
+}
+
+.card.cyber-card .card-title {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #7dd3fc;
+}
+
+.metrics-card .metric-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+}
+
+.metrics-card .metric-value {
+  font-size: 1.9rem;
+}
+
+.label-text {
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #38bdf8;
+  margin-right: 0.5rem;
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 220px;
+}
+
+.cyber-table {
+  color: #c7fffd;
+  font-size: 0.8rem;
+}
+
+.cyber-table thead th {
+  border-color: rgba(45, 212, 191, 0.35);
+  color: #a5f3fc;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+}
+
+.cyber-table tbody tr.normal-row {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.cyber-table tbody tr.normal-row:hover {
+  background: rgba(15, 23, 42, 1);
+}
+
+.cyber-table tbody tr.suspicious-row {
+  background: radial-gradient(circle at left, rgba(248, 113, 113, 0.42), rgba(127, 29, 29, 0.92));
+  box-shadow:
+    0 0 18px rgba(248, 113, 113, 0.85),
+    0 0 28px rgba(220, 38, 38, 0.75);
+}
+
+.cyber-table tbody tr.suspicious-row td {
+  border-top-color: rgba(248, 113, 113, 0.4);
+}
+
+.badge {
+  font-family: "Share Tech Mono", monospace;
+  letter-spacing: 0.08em;
+}
+
+.badge-device {
+  border: 1px solid rgba(59, 130, 246, 0.7);
+  color: #bfdbfe;
+  background: rgba(15, 23, 42, 0.8);
+  margin-right: 0.25rem;
+}
+
+.bg-success-soft {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.bg-danger-soft {
+  color: #f97373;
+  background: rgba(248, 113, 113, 0.15);
+}
+
+.bg-info-soft {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.18);
+}
+
+.risk-badge {
+  border-radius: 999px;
+  padding-inline: 0.6rem;
+}
+
+.risk-low {
+  background: rgba(22, 163, 74, 0.18);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.6);
+}
+
+.risk-med {
+  background: rgba(234, 179, 8, 0.18);
+  color: #fde68a;
+  border: 1px solid rgba(234, 179, 8, 0.6);
+}
+
+.risk-high {
+  background: rgba(220, 38, 38, 0.22);
+  color: #fecaca;
+  border: 1px solid rgba(248, 113, 113, 0.85);
+  box-shadow: 0 0 14px rgba(248, 113, 113, 0.85);
+}
+
+.btn-neon {
+  border-radius: 999px;
+  border: 1px solid rgba(34, 211, 238, 0.9);
+  color: #e0f2fe;
+  background: radial-gradient(circle at top, rgba(34, 211, 238, 0.18), rgba(15, 23, 42, 1));
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  padding-inline: 1.2rem;
+}
+
+.btn-neon:hover {
+  color: #0f172a;
+  background: rgba(34, 211, 238, 0.9);
+  box-shadow:
+    0 0 16px rgba(34, 211, 238, 0.9),
+    0 0 32px rgba(6, 182, 212, 0.8);
+}
+
+.cyber-list .list-group-item {
+  background: rgba(15, 23, 42, 0.9);
+  border-color: rgba(45, 212, 191, 0.25);
+  color: #e0f2fe;
+}
+
+.suspicious-list-item {
+  background: radial-gradient(circle at left, rgba(239, 68, 68, 0.35), rgba(15, 23, 42, 1));
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.8);
+}
+
+.terminal-panel {
+  background: #020617;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(22, 163, 74, 0.7);
+  box-shadow:
+    0 0 16px rgba(22, 163, 74, 0.7),
+    inset 0 0 8px rgba(15, 23, 42, 0.9);
+  padding: 0.75rem 1rem;
+  max-height: 260px;
+  overflow-y: auto;
+  font-size: 0.8rem;
+}
+
+.terminal-line {
+  font-family: "Share Tech Mono", monospace;
+  color: #22c55e;
+  white-space: pre-wrap;
+}
+
+.terminal-warning {
+  color: #eab308;
+}
+
+.terminal-alert {
+  color: #fb7185;
+}
+
+.form-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #7dd3fc;
+}
+
+.form-control,
+.form-select {
+  background-color: rgba(15, 23, 42, 0.9);
+  border-color: rgba(45, 212, 191, 0.4);
+  color: #e0f2fe;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: rgba(15, 23, 42, 1);
+  border-color: rgba(56, 189, 248, 0.8);
+  box-shadow: 0 0 0 0.15rem rgba(56, 189, 248, 0.4);
+  color: #e0f2fe;
+}
+
+.form-control::placeholder {
+  color: #64748b;
+}
+
+@media (max-width: 767.98px) {
+  .chart-wrapper {
+    height: 200px;
+  }
+
+  .metrics-card .metric-value {
+    font-size: 1.5rem;
+  }
+}
+

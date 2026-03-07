@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Login Risk Detection{% endblock %}
+
+{% block content %}
+  <h2 class="mb-1 dashboard-title">CYBER DEFENSE CONSOLE</h2>
+  <p class="text-muted mb-4 small">Operator: {{ user.username }} &mdash; Monitoring live authentication telemetry</p>
+
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="card cyber-card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Account fingerprint</h5>
+          <p class="mb-1"><span class="label-text">Email</span> {{ user.email }}</p>
+          <p class="mb-1">
+            <span class="label-text">Created</span>
+            {{ user.created_at.strftime('%Y-%m-%d %H:%M') }}
+          </p>
+          <p class="mb-1">
+            <span class="label-text">Last login</span>
+            {% if user.last_login_at %}
+              {{ user.last_login_at.strftime('%Y-%m-%d %H:%M') }}
+              from {{ user.last_login_ip or 'N/A' }}
+            {% else %}
+              No successful logins yet.
+            {% endif %}
+          </p>
+          <p class="mb-0">
+            <span class="label-text">Last location</span>
+            {{ user.last_login_location|default('Unknown', true) }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card cyber-card metrics-card h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Authentication health</h5>
+          <div class="d-flex justify-content-around mt-3">
+            <div>
+              <div class="metric-label text-success">SUCCESS</div>
+              <div class="metric-value">{{ success_count }}</div>
+            </div>
+            <div>
+              <div class="metric-label text-danger">FAILURE</div>
+              <div class="metric-value">{{ failure_count }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card cyber-card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Threat snapshot</h5>
+          <p class="display-6 mb-1 text-danger">
+            {{ suspicious_attempts|length }}
+          </p>
+          <p class="mb-1 small text-uppercase text-muted">Suspicious or failed attempts (risk ≥ 60)</p>
+          <p class="small mb-0 text-muted">
+            Review alerts and security logs below to investigate anomalies.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-lg-8">
+      <div class="card cyber-card h-100">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Risk score over time</h5>
+          <div class="chart-wrapper">
+            <canvas id="riskChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card cyber-card h-100">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Success vs failure</h5>
+          <div class="chart-wrapper">
+            <canvas id="outcomeChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card cyber-card mb-4">
+        <div class="card-body table-responsive">
+          <h5 class="card-title mb-3">Recent login attempts</h5>
+          <table class="table table-sm align-middle cyber-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>IP</th>
+                <th>Device / Agent</th>
+                <th>Location</th>
+                <th>Success</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in attempts %}
+                <tr class="{% if (a.risk_score or 0) >= 60 or not a.was_successful %}suspicious-row{% else %}normal-row{% endif %}">
+                  <td>{{ a.attempted_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                  <td>{{ a.ip_address }}</td>
+                  <td class="text-truncate" style="max-width: 220px;" title="{{ a.user_agent }}">
+                    {% if a.device_type %}
+                      <span class="badge bg-outline badge-device">{{ a.device_type }}</span>
+                    {% endif %}
+                    {{ a.user_agent }}
+                  </td>
+                  <td>{{ a.location or 'Unknown' }}</td>
+                  <td>
+                    {% if a.was_successful %}
+                      <span class="badge bg-success-soft">YES</span>
+                    {% else %}
+                      <span class="badge bg-danger-soft">NO</span>
+                    {% endif %}
+                    {% if a.is_simulated %}
+                      <span class="badge bg-info-soft">SIM</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <span class="badge risk-badge {% if (a.risk_score or 0) >= 60 %}risk-high{% elif (a.risk_score or 0) >= 30 %}risk-med{% else %}risk-low{% endif %}">
+                      {{ (a.risk_score or 0)|round(0) }}
+                    </span>
+                  </td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="6" class="text-center text-muted">No login attempts recorded yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card cyber-card">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Simulated suspicious login</h5>
+          <p class="small text-muted mb-3">
+            Use this panel to emulate high-risk scenarios without changing your real device or network.
+          </p>
+          <form method="post" action="{{ url_for('simulate_login') }}" class="row g-3">
+            <div class="col-md-6">
+              <label for="sim-ip" class="form-label">IP Address</label>
+              <input type="text" class="form-control form-control-sm" id="sim-ip" name="ip_address" placeholder="203.0.113.42">
+            </div>
+            <div class="col-md-6">
+              <label for="sim-device" class="form-label">Device Type</label>
+              <select class="form-select form-select-sm" id="sim-device" name="device_type">
+                <option value="Windows">Windows</option>
+                <option value="Mac">Mac</option>
+                <option value="Android">Android</option>
+                <option value="iPhone">iPhone</option>
+                <option value="Linux">Linux</option>
+                <option value="Kali Linux">Kali Linux</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="sim-time" class="form-label">Login Time</label>
+              <input type="datetime-local" class="form-control form-control-sm" id="sim-time" name="login_time">
+            </div>
+            <div class="col-md-6">
+              <label for="sim-location" class="form-label">Location / Country</label>
+              <input type="text" class="form-control form-control-sm" id="sim-location" name="location" placeholder="Germany, US, etc.">
+            </div>
+            <div class="col-12 text-end">
+              <button type="submit" class="btn btn-sm btn-neon">Inject simulated login</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card cyber-card mb-4">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Suspicious login alerts</h5>
+          {% if suspicious_attempts %}
+            <ul class="list-group small cyber-list">
+              {% for a in suspicious_attempts %}
+                <li class="list-group-item suspicious-list-item">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span>{{ a.attempted_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                    <span class="badge risk-badge risk-high">{{ (a.risk_score or 0)|round(0) }}</span>
+                  </div>
+                  <div class="text-muted small mt-1">
+                    IP {{ a.ip_address }}{% if a.location %}, {{ a.location }}{% endif %}<br>
+                    {{ a.risk_reason }}
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted mb-0">No suspicious activity detected yet.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card cyber-card">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Live security logs</h5>
+          <div class="terminal-panel">
+            {% if security_logs %}
+              {% for line in security_logs %}
+                {% set level = 'info' %}
+                {% if '[ALERT]' in line %}
+                  {% set level = 'alert' %}
+                {% elif '[WARNING]' in line %}
+                  {% set level = 'warning' %}
+                {% endif %}
+                <div class="terminal-line terminal-{{ level }}">{{ line }}</div>
+              {% endfor %}
+            {% else %}
+              <div class="terminal-line terminal-info">[INFO] Security event stream is currently idle.</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const labels = {{ labels|tojson }};
+    const riskScores = {{ risk_scores|tojson }};
+    const successFlags = {{ success_flags|tojson }};
+
+    const riskCtx = document.getElementById('riskChart').getContext('2d');
+    new Chart(riskCtx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Risk score',
+          data: riskScores,
+          borderColor: 'rgba(0, 255, 170, 0.9)',
+          backgroundColor: 'rgba(0, 255, 170, 0.15)',
+          tension: 0.3,
+          fill: true,
+          pointRadius: 3,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            title: { display: true, text: 'Risk score (0-100)' }
+          },
+          x: {
+            title: { display: true, text: 'Login time' },
+            ticks: { maxTicksLimit: 8 }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              afterLabel: function(ctx) {
+                const label = successFlags[ctx.dataIndex] || '';
+                return 'Outcome: ' + label;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const outcomeCtx = document.getElementById('outcomeChart').getContext('2d');
+    new Chart(outcomeCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Success', 'Failure'],
+        datasets: [{
+          data: [{{ success_count }}, {{ failure_count }}],
+          backgroundColor: ['rgba(0, 255, 170, 0.9)', 'rgba(0, 200, 255, 0.9)'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  </script>
+{% endblock %}
+
