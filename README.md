@@ -1,6 +1,6 @@
 # Login Risk Detection System
 
-aaliyah16.pythonanywhere.com
+Live Demo: https://aaliyah16.pythonanywhere.com
 
 A Flask-based web application that detects suspicious login activity using factors such as IP address, device type, and login time. The system assigns risk scores to login attempts and visualizes them through an interactive dashboard.
 
